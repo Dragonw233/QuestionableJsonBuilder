@@ -1,22 +1,16 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace QuestionableJsonBuilder.Services;
 
 public sealed class RemoteQuestIndexService : IDisposable
 {
-    private static readonly Regex QuestFileRegex = new(
-        @"^QuestPaths/.+/(?<id>\d+)_(?<name>.+)\.json$",
-        RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
     private readonly HttpClient httpClient = new();
     private readonly string cachePath;
     private HashSet<ushort> implementedIds = new();
 
-    public string SourceStatus { get; private set; } = "Questionable quest repo not loaded.";
-
+    public string SourceStatus { get; private set; } = "Questionable quest index not loaded.";
     public IReadOnlySet<ushort> ImplementedQuestIds => implementedIds;
 
     public RemoteQuestIndexService(string remoteUrl)
@@ -26,6 +20,7 @@ public sealed class RemoteQuestIndexService : IDisposable
         var cacheDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "QuestionableJsonBuilder");
+
         Directory.CreateDirectory(cacheDirectory);
         cachePath = Path.Combine(cacheDirectory, "questionable-implemented-cache.json");
 
@@ -53,17 +48,17 @@ public sealed class RemoteQuestIndexService : IDisposable
         try
         {
             var json = httpClient.GetStringAsync(RemoteUrl).GetAwaiter().GetResult();
-            var parsed = ParseGitHubTreeResponse(json);
+            var parsed = ParseWorkerResponse(json);
 
             if (parsed.Count == 0)
             {
-                SourceStatus = "Remote Questionable quest list loaded, but no quest files were parsed. Using previous data.";
+                SourceStatus = "Remote quest index loaded, but no quests were parsed. Using previous data.";
                 return;
             }
 
             implementedIds = parsed;
             SaveCache(implementedIds);
-            SourceStatus = $"Loaded {implementedIds.Count} implemented quests from the remote Questionable source.";
+            SourceStatus = $"Loaded {implementedIds.Count} implemented quests from Worker.";
         }
         catch (Exception ex)
         {
@@ -80,6 +75,7 @@ public sealed class RemoteQuestIndexService : IDisposable
             {
                 var json = File.ReadAllText(cachePath);
                 var cached = JsonSerializer.Deserialize<List<ushort>>(json);
+
                 if (cached is { Count: > 0 })
                 {
                     implementedIds = cached.ToHashSet();
@@ -105,30 +101,25 @@ public sealed class RemoteQuestIndexService : IDisposable
         File.WriteAllText(cachePath, json);
     }
 
-    private static HashSet<ushort> ParseGitHubTreeResponse(string json)
+    private static HashSet<ushort> ParseWorkerResponse(string json)
     {
         var result = new HashSet<ushort>();
 
         using var document = JsonDocument.Parse(json);
 
-        if (!document.RootElement.TryGetProperty("tree", out var treeElement) ||
-            treeElement.ValueKind != JsonValueKind.Array)
+        if (!document.RootElement.TryGetProperty("quests", out var questsElement) ||
+            questsElement.ValueKind != JsonValueKind.Array)
             return result;
 
-        foreach (var item in treeElement.EnumerateArray())
+        foreach (var quest in questsElement.EnumerateArray())
         {
-            if (!item.TryGetProperty("path", out var pathElement))
+            if (!quest.TryGetProperty("questId", out var questIdElement))
                 continue;
 
-            var path = pathElement.GetString();
-            if (string.IsNullOrWhiteSpace(path))
+            if (!questIdElement.TryGetUInt16(out var questId))
                 continue;
 
-            var match = QuestFileRegex.Match(path);
-            if (!match.Success)
-                continue;
-
-            if (!ushort.TryParse(match.Groups["id"].Value, out var questId))
+            if (questId == 0)
                 continue;
 
             result.Add(questId);

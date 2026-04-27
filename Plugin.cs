@@ -11,6 +11,8 @@ namespace QuestionableJsonBuilder;
 public sealed class Plugin : IDalamudPlugin
 {
     private const string CommandName = "/qstb";
+    private const int CurrentConfigVersion = 2;
+    private const string WorkerUrl = "https://questionable-worker.epinephren.workers.dev/";
 
 
     private readonly IDalamudPluginInterface pluginInterface;
@@ -36,6 +38,15 @@ public sealed class Plugin : IDalamudPlugin
 
         this.configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         this.configuration.Initialize(pluginInterface);
+        
+        if (this.configuration.Version < CurrentConfigVersion ||
+            this.configuration.RemoteQuestIndexUrl.Contains("api.github.com", StringComparison.OrdinalIgnoreCase))
+        {
+            this.configuration.RemoteQuestIndexUrl = WorkerUrl;
+            this.configuration.Version = CurrentConfigVersion;
+            this.configuration.Save();
+        }
+        
 
         this.controller = new QuestWizardController(this.configuration, objectTable, clientState, dataManager);
         this.helpWindow = new HelpWindow();
