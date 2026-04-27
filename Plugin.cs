@@ -17,6 +17,7 @@ public sealed class Plugin : IDalamudPlugin
     internal static IDataManager DataManager { get; private set; } = null!;
     internal static IPluginLog Log { get; private set; } = null!;
     internal static Configuration Configuration { get; private set; } = null!;
+
     private const string CommandName = "/qstb";
     private const int CurrentConfigVersion = 2;
     private const string WorkerUrl = "https://questionable-worker.epinephren.workers.dev/";
@@ -37,31 +38,23 @@ public sealed class Plugin : IDalamudPlugin
         IDataManager dataManager,
         IPluginLog pluginLog)
     {
-<<<<<<< main
         PluginInterface = pluginInterface;
         CommandManager = commandManager;
         ObjectTable = objectTable;
         ClientState = clientState;
         DataManager = dataManager;
         Log = pluginLog;
+
         Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(pluginInterface);
-=======
-        this.pluginInterface = pluginInterface;
-        this.commandManager = commandManager;
 
-        this.configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        this.configuration.Initialize(pluginInterface);
-        
-        if (this.configuration.Version < CurrentConfigVersion ||
-            this.configuration.RemoteQuestIndexUrl.Contains("api.github.com", StringComparison.OrdinalIgnoreCase))
+        if (Configuration.Version < CurrentConfigVersion ||
+            Configuration.RemoteQuestIndexUrl.Contains("api.github.com", StringComparison.OrdinalIgnoreCase))
         {
-            this.configuration.RemoteQuestIndexUrl = WorkerUrl;
-            this.configuration.Version = CurrentConfigVersion;
-            this.configuration.Save();
+            Configuration.RemoteQuestIndexUrl = WorkerUrl;
+            Configuration.Version = CurrentConfigVersion;
+            Configuration.Save();
         }
-        
->>>>>>> main
 
         this.controller = new QuestWizardController();
         this.helpWindow = new HelpWindow();
@@ -79,9 +72,9 @@ public sealed class Plugin : IDalamudPlugin
             HelpMessage = "Open the Questionable JSON Builder."
         });
 
-        pluginInterface.UiBuilder.Draw += this.DrawUi;
-        pluginInterface.UiBuilder.OpenMainUi += this.OpenMainUi;
-        pluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
+        PluginInterface.UiBuilder.Draw += this.DrawUi;
+        PluginInterface.UiBuilder.OpenMainUi += this.OpenMainUi;
+        PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
     }
 
     private void OnCommand(string command, string arguments)
