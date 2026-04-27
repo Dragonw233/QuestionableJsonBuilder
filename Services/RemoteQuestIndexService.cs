@@ -9,8 +9,16 @@ public sealed class RemoteQuestIndexService : IDisposable
     private readonly HttpClient httpClient = new();
     private readonly string cachePath;
     private HashSet<ushort> implementedIds = new();
+    private string _sourceStatus = "Questionable quest index not loaded.";
+    
+    public string SourceStatus {
+        get => _sourceStatus;
+        private set {
+            _sourceStatus = value;
+            Plugin.Log.Info("RemoteSourceStatus: {0}", _sourceStatus);
+        }
+    }
 
-    public string SourceStatus { get; private set; } = "Questionable quest index not loaded.";
     public IReadOnlySet<ushort> ImplementedQuestIds => implementedIds;
 
     public RemoteQuestIndexService(string remoteUrl)
