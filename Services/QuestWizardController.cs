@@ -223,7 +223,7 @@ public sealed class QuestWizardController : IDisposable
         }
 
         step.Position = localPlayer.Position;
-        step.TerritoryId = clientState.TerritoryType;
+        step.TerritoryId = (ushort)clientState.TerritoryType;
         StatusText = "Filled step position from the current player position.";
     }
 
