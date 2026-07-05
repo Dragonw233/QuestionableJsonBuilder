@@ -1,52 +1,37 @@
-# Questionable JSON Builder
-
-Questionable JSON Builder is a Dalamud plugin for Final Fantasy XIV that helps contributors create **Questionable-compatible quest JSON files** without manually writing the JSON by hand.
-
-It loads quest data from the game, compares it against the Questionable repository, shows which quests are already implemented, and guides the user through building valid quest steps and sequences.
-
-
-## TL;DR
-
-- Addon for the "Questionable" plugin. Provides a structured way to build JSON configs programmatically instead of writing them manually.
-
-
-## Features
-
-- Quest search and selection from in-game data
-- Implemented vs missing quest detection
-- Guided step builder for common quest actions
-- Auto-generated Sequence `0` and `255`
-- JSON preview before export
-- Export to a user-selected directory
-- Fixed filename generation for Questionable compatibility
-- Help window and contributor-focused UI guidance
-
-## Supported step types
-
-The builder supports common Questionable workflow steps such as:
-
-- Talk / interact
-- Hand over
-- Use item
-- Say / chat message
-- Emote
-- Action
-- Walk to location
-- Combat
-- Craft
-- Gather
-- Switch class
-- Manual progress / instruction steps
-
-## Important notes
-
-- The plugin is designed to keep the exported filename in the correct format for Questionable.
-- Only change the **export directory**, not the generated filename.
-- Sequence `0` and `255` are created automatically.
-- Some advanced Questionable fields are exposed as structured or JSON-backed inputs for compatibility.
-- If you need help or encounter any errors please reach out on the official Discord: https://puni.sh/
-
-## Credits
-
-- Created by epinephren.
-- Built for contributors working with the Questionable project.
+# Questionable JSON 构建器
+Questionable JSON 构建器是《最终幻想 14》的一个 Dalamud 插件，可帮助参与者无需手动编写 JSON 即可创建与Questionable兼容的任务 JSON 文件。
+它从游戏中加载任务数据，与Questionable存储库进行比较，显示哪些任务已实现，并引导用户构建有效的任务步骤和序列。
+## 要点总结
+- 是“Questionable”插件的附加组件。提供了一种通过编程方式构建 JSON 配置的结构化方法，而不是手动编写。
+## 功能
+- 从游戏数据中进行任务搜索和选择
+- 已实现与缺失任务的检测
+- 针对常见任务操作的引导式步骤构建器
+- 自动生成序列`0`和`255`
+- 导出前的 JSON 预览
+- 导出到用户选择的目录
+- 为保证与Questionable兼容的固定文件名生成
+- 帮助窗口和面向参与者的用户界面指导
+## 支持的步骤类型
+该构建器支持常见的Questionable工作流程步骤，例如：
+- 交谈/交互
+- 移交
+- 使用物品
+- 说/聊天消息
+- 表情动作
+- 动作
+- 步行到位置
+- 战斗
+- 制作
+- 采集
+- 切换职业
+- 手动进度/指令步骤
+## 重要注意事项
+- 该插件旨在使导出的文件名保持与Questionable兼容的正确格式。
+- 仅更改**导出目录**，不更改生成的文件名。
+- 序列`0`和`255`是自动创建的。
+- 一些高级Questionable字段作为结构化或基于 JSON 的输入进行暴露以实现兼容性。
+- 如果需要帮助或遇到任何错误，请在官方 Discord 上联系：https://puni.sh/
+## 致谢
+- 由 epinephren 创建。
+- 为与Questionable项目合作的参与者而构建。
